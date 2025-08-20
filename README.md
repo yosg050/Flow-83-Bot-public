@@ -1,40 +1,15 @@
 # Flow-83-bot – Case Study
 
-## 👀 מה זה?
-מערכת בוטים מבוססי GPT המלווה משתמשים בתהליך מתמשך לאורך זמן, עם הנחיות מדויקות בכל שלב.  
-המערכת נבנתה בצד לקוח ב-React, ובצד שרת השתמשתי ב-Supabase (PostgreSQL + Edge Functions) לניהול נתונים וקריאות ל-GPT.
+This repository is a **case study** of work I did for a client project.  
+I was asked to stabilize and refactor an existing AI bot platform (React + Supabase + GPT).  
+The original system had several issues – disconnected DB, prompts stored in client code, duplicated logic, and inconsistent conversation flow.
 
----
+### Fixes and improvements
+- Rebuilt the architecture to have a clear separation between client and server.  
+- Connected the app properly to Supabase (PostgreSQL + Edge Functions).  
+- Moved all prompt templates to the database with secure access.  
+- Implemented context-aware conversations (sliding window, no duplicated history).  
+- Removed duplicate code and unified critical functions.  
+- Added support for reliable automated messages tied to user state.
 
-## ❌ מה גיליתי כשנכנסתי לקוד המקורי?
-- **DB מנותק** – למרות סכמה מושקעת ב-PostgreSQL, הקוד לא ביצע כתיבה/קריאה בפועל; כל הנתונים נשמרו מקומית בלבד.  
-- **Prompts מוטמעים ב-Client** – פוזרו בתוך קבצי React, חשופים למשתמש וללא אחידות.  
-- **שכפול היסטוריה** – בכל קריאה ל-GPT כל ה-Prompt הוכפל במלואו שוב ושוב, במקום להוסיף רק הודעות חדשות.  
-- **פונקציות כפולות** – קוד זהה וקריאות חוזרות יצרו באגים מיותרים.  
-- **הודעות אוטומטיות מנותקות** – נשלחו בלי קשר למצב המשתמש, וללא תיעוד ב-DB.  
-- **חוסר עקביות במבנה הקוד** – לוגיקה מפוזרת, קושי בתחזוקה.
-
----
-
-## ✔️ מה עשיתי כדי לייצב את המערכת?
-- **ארכיטקטורה מחדש** – יצירת מבנה אחיד וברור גם בצד שרת וגם בצד לקוח.  
-- **סכמה מבוססת DB** – ארגנתי מחדש את הטבלאות ואת הקשרים:
-  - **Users** – משתמשים רשומים.  
-  - **Tracks** – מסלולים/תהליכים שהבוט מלווה בהם.  
-  - **Conversations** – שיחות פעילות, כולל סטטוס והתקדמות.  
-  - **Messages** – הודעות בתוך שיחה, עם תיוג role (user / assistant).  
-  - **Prompt_Templates** – תבניות prompts מסודרות ב-DB במקום בצד הלקוח.  
-- **אבטחת מידע** – prompts עברו ל-DB עם גישה מבוקרת בלבד; אין יותר חשיפה בצד המשתמש.  
-- **ניהול הקשר חכם** – קריאה ל-GPT שולחת רק את ההודעות האחרונות (חלון הקשר), במקום היסטוריה מלאה.  
-- **ביטול כפילויות** – abstraction אחיד לפונקציות חוזרות.  
-- **הודעות אוטומטיות חכמות** – שליחה בהתאם להקשר השיחה ולסטטוס המשתמש.
-
----
-
-## 📐 מבנה כללי
-```mermaid
-erDiagram
-    USERS ||--o{ CONVERSATIONS : has
-    TRACKS ||--o{ CONVERSATIONS : defines
-    CONVERSATIONS ||--o{ MESSAGES : contains
-    PROMPT_TEMPLATES ||--o{ TRACKS : configures
+**Result:** The system now provides consistent, secure, and context-aware conversations as expected from an LLM-based bot.
